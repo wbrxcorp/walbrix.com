@@ -67,7 +67,7 @@ def page_with_path(path,page_name):
 
     page_length = entry["page_length"] if "page_length" in entry else 20
     # 同一プレフィクスのエントリ一覧も
-    entry.update(get_json_from_cms("%s/?limit=%d" % (path,page_length)))
+    entry["entries"] = get_json_from_cms("%s/?limit=%d" % (path,page_length))["entries"]
 
     # 同一ラベルのエントリ一覧も
     if len(entry["labels"]) > 0:
