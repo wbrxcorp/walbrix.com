@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>{% if title %}{{title}}{% endif %}{% if title %}{{title_suffix}}{% endif %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% if description %}<meta name="description" content="{{ description }}">{% endif %}
+    <meta name="author" content="ワルブリックス株式会社"/>
+    <meta property="og:title" content="{% if title %}{{ title }}{%else%}ワルブリックス株式会社{%endif%}"/>
+    <meta property="og:type" content="{%if not(category_name) and page_name=="index"%}website{%else%}article{%endif%}"/>
+    <meta property="og:url" content="http://www.walbrix.com/jp{%if category_name %}/{{ category_name }}{%endif%}/{%if page_name != "index"%}{{page_name}}.html{%endif%}"/>
+    <meta property="og:site_name" content="ワルブリックス株式会社"/>
+    {%block ogp_publisher%}<meta property="article:publisher" content="https://www.facebook.com/wbrxcorp" />{%endblock%}
+    {% if description %}<meta property="og:description" content="{{ description }}"/>{% endif %}
+    {% if page_image %}<meta property="og:image" content="{{ page_image }}"/>{% endif %}
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8;IE=EmulateIE9">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-overrides.css') }}" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/theme.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/github-markdown.css') }}" />
+
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css' />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}" type="text/css" media="screen" />    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contact.css') }}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portfolio-item.css') }}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/features.css') }}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/blog.css') }}" type="text/css" media="screen" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/blogpost.css') }}" type="text/css" media="screen" />
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/animate.css') }}" media="screen, projection" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-lightbox.min.css') }}" />
+
+    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.walbrix.com/jp/blog/index.xml" />
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    {% include "analytics.html" %}
+    {%block style%}{%endblock%}
+  </head>
+
+  <body{%if prefix == "wbrxcorp" and name == "index"%} class="pull_top"{%endif%}{%if noreport%} onload="_gaq.push(['_setVar', 'no_report']);"{%endif%}>
+    <div class="navbar navbar-inverse navbar-{%if prefix == "wbrxcorp" and name == "index"%}fixed{%else%}static{%endif%}-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle pull-right" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="{{ url_for('.index') }}" class="navbar-brand"><strong>ワルブリックス株式会社</strong></a>
+            </div>
+
+            <div class="collapse navbar-collapse navbar-ex1-collapse" role="navigation">
+                <ul class="nav navbar-nav navbar-right">
+                    <li{%if prefix=="wbrxcorp" and name == "index"%} class="active"{%endif%}><a href="{{ url_for('.index') }}">ホーム</a></li>
+                    <li{%if prefix=="wbrxcorp" and name == "about-us"%} class="active"{%endif%}><a href="{{ url_for('.index') }}about-us.html">会社概要</a></li>
+                    <li class="dropdown{%if category_name=="product"%} active{%endif%}">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">製品とサービス <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="http://www.walbrix.net" targe="_blank">Walbrixオペレーティングシステム</a></li>
+                            <li><a href="{{ url_for('.index') }}product/oscar.html">全文検索NAS</a></li>
+                            <li><a href="http://www.wbport.com" target="_blank">Webゲートウェイサービス</a></li>
+                            <li><a href="{{ url_for('.index') }}product/p2v.html">サーバコンソリデーション</a></li>
+                            <li><a href="{{ url_for('.index') }}product/issupport.html">情報システムサポート</a></li>
+                            <li><a href="{{ url_for('.index') }}product/transfer.html">サーバ移転支援</a></li>
+                            <li><a href="{{ url_for('.index') }}product/webapp.html">Webシステム開発</a></li>
+                            <li><a href="{{ url_for('.index') }}product/mobile.html">モバイルアプリ開発</a></li>
+                        </ul>
+                    </li>
+                    <li{%if not category_name and page_name == "md"%} class="active"{%endif%}><a href="{{ url_for('.index') }}md.html">代表について</a></li>
+                    <li{%if not category_name and page_name == "contact"%} class="active"{%endif%}><a href="{{ url_for('.index') }}contact.html">お問い合わせ・連絡先</a></li>
+                    <li{%if category_name == "blog"%} class="active"{%endif%}><a href="{{ url_for('.index') }}blog/">BLOG</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {%block contents%}
+    {{ content | safe }}
+    {%endblock%}
+
+    <footer id="footer"{%if not category_name and page_name=="contact"%} style="margin-top:0;"{%endif%}>
+        <div class="container">
+            <div class="row info">
+                <div class="col-sm-6 residence">
+                    <ul>
+		      <li>〒101-0052</li>
+                      <li>東京都千代田区神田小川町3-11-2</li>
+                      <li>インペリアル御茶の水 219</li>
+                    </ul>
+                </div>
+                <div class="col-sm-5 touch">
+                    <ul>
+                        <li><strong>P.</strong>03-5283-8162</li>
+                        <li><strong>F.</strong>03-5283-8169</li>
+                        <li><strong>E.</strong><a href="mailto:info@jp.walbrix.com"> info@jp.walbrix.com</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row credits">
+                <div class="col-md-12">
+                    <div class="row social">
+                        <div class="col-md-12">
+                            <a href="http://twitter.com/wbrxcorp" class="twitter">
+                                <span class="socialicons ico2"></span>
+                                <span class="socialicons_h ico2h"></span>
+                            </a>
+                            <a href="http://www.facebook.com/wbrxcorp" class="facebook">
+                                <span class="socialicons ico1"></span>
+                                <span class="socialicons_h ico1h"></span>
+                            </a>
+                            <a href="https://plus.google.com/b/102441951933734637729/102441951933734637729/about" class="googleplus">
+                                <span class="socialicons ico3"></span>
+                                <span class="socialicons_h ico3h"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row copyright">
+                        <div class="col-md-12">
+                            © 2014 Walbrix Corporation. All rights reserved.
+                        </div>
+                    </div>
+                </div>            
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/index-slider.js') }}"></script>	
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-lightbox.min.js') }}"></script>	
+    <script src="{{ url_for('static', filename='js/jquery.socialbutton-1.9.1.min.js') }}"></script>
+    <script type="text/javascript">
+      $(function () {
+        $(".socialbuttons .twitter").socialbutton("twitter", {button:"horizontal"}).width(95);
+        $(".socialbuttons .facebook").socialbutton("facebook_like", {button:"button_count"}).width(110);
+        $(".socialbuttons .google").socialbutton("google_plusone", {button:"medium"}).width(70);
+        $(".socialbuttons .hatena").socialbutton("hatena", {button : "standard"}).width(70);
+      });
+    </script>
+<!-- twitter follow badge by go2web20 -->
+<script src='http://www.go2web20.net/twitterfollowbadge/1.0/badge.js' type='text/javascript'></script><script type='text/javascript' charset='utf-8'><!--
+tfb.account = 'wbrxcorp';
+tfb.label = 'follow-us';
+tfb.color = '#35ccff';
+tfb.side = 'r';
+tfb.top = 136;
+tfb.showbadge();
+--></script>
+<!-- end of twitter follow badge -->
+    {%block script%}{%endblock%}
+  </body>
+</html>

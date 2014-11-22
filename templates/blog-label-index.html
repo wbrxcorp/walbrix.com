@@ -1,0 +1,70 @@
+{% extends "page.html" %}
+
+{%block title%}{{label_definitions[name].name}} - ワルブリックス株式会社 ブログ{%endblock%}
+
+{%if not page_image%}
+  {%if labels and labels[0] in label_definitions and "page_image" in label_definitions[labels[0]]%}
+    {%set page_image = label_definitions[labels[0]].page_image %}
+  {%else%}
+    {%set page_image = 	"http://www.walbrix.com/jp/static/img/blog.jpg"%}
+  {%endif%}
+{%endif%}
+
+{%block contents%}
+<div class="container">
+  <ol class="breadcrumb">
+    <li><a href="{{ url_for('.index') }}">ホーム</a></li>
+    <li><a href="{{ url_for('.index') }}blog/">BLOG</a></li>
+    <li class="active">{{label_definitions[name].name}}</li>
+  </ol>
+  <div id="blog">
+    {% if page_image %}<div class="pull-right" style="max-width:200px;height:200px;vertical-align:middle;"><img class="img-rounded img-responsive" src="{{page_image}}"/></div>{% endif %}
+
+    <div class="post_content">
+      <h2>{{title}}</h2>
+      {% if description %}<p class="lead">{{description}}</p>{% endif %}
+      <div class="socialbuttons">
+	<div class="twitter pull-left"></div>
+	<div class="facebook pull-left"></div>
+	<div class="google pull-left"></div>
+	<div class="hatena pull-left"></div>
+	<div class="pull-left"><a href="https://twitter.com/wbrxcorp" class="twitter-follow-button" data-show-count="false" data-lang="ja" data-show-screen-name="false" data-dnt="true">@wbrxcorpさんをフォロー</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></div>
+      </div>
+      <div class="clearfix"></div>
+
+      {{ content|safe }}
+
+      {%if not disable_autoindex%}
+      <div style="margin-top:1em;margin-bottom:1em;">
+	<h3>このカテゴリの記事一覧</h3>
+	{% for entry in labeled_entries %}
+	<div class="media">
+	  {%if entry.page_image%}
+	  <a class="pull-left" href="{{entry.name}}.html">
+	    <img class="media-object img-rounded" src="{{entry.page_image}}" style="max-width:100px;"/>
+	  </a>
+	  {%endif%}
+	  <div class="media-body">
+	    <h4 class="media-heading"><a href="{{entry.name}}.html">{{ entry.title }}</a> <small>{{ entry.published_at|date }}</small></h4>
+	    {{ entry.description }}
+	  </div>
+	</div>
+	{% endfor %}
+      </div>
+      {%endif%}
+
+      <div class="socialbuttons">
+	<div class="twitter pull-left"></div>
+	<div class="facebook pull-left"></div>
+	<div class="google pull-left"></div>
+	<div class="hatena pull-left"></div>
+	<div class="pull-left"><a href="https://twitter.com/wbrxcorp" class="twitter-follow-button" data-show-count="false" data-lang="ja" data-show-screen-name="false" data-dnt="true">@wbrxcorpさんをフォロー</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></div>
+      </div>
+      <div class="clearfix"></div>
+
+    </div>
+  </div>
+</div>
+{%endblock%}

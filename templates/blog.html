@@ -1,0 +1,226 @@
+{%set orig_title = title%}
+{%if labels and labels|length>0 and labels[0] in label_definitions and label_definitions[labels[0]].index%}
+  {%set title = title + " - " + label_definitions[labels[0]].name%}
+{%else%}
+  {%set title = title + " - ブログ"%}
+{%endif%}
+{%if not page_image%}
+  {%if labels and labels[0] in label_definitions and "page_image" in label_definitions[labels[0]]%}
+    {%set page_image = label_definitions[labels[0]].page_image %}
+  {%else%}
+    {%set page_image = 	"http://www.walbrix.com/jp/static/img/blog.jpg"%}
+  {%endif%}
+{%endif%}
+{%if not banner and banner != None%}
+  {%if labels and labels[0] and "banner" in label_definitions[labels[0]]%}
+    {%set banner = label_definitions[labels[0]].banner%}
+  {%else%}
+    {%set banner = "standard"%}
+  {%endif%}
+{%endif%}
+{% extends "page.html" %}
+
+{%macro prevnext() -%}
+{% if previous or next%}
+  <dl class="dl-horizontal" style="margin-top:1em;margin-bottom:1em;">
+  {% if previous %}<dt>≪ 前の記事</dt><dd><a href="./{{previous.page_name}}.html">{{previous.title}}</a></dd>{%endif%}
+  {% if next %}<dt>次の記事 ≫</dt><dd><a href="./{{next.page_name}}.html">{{next.title}}</a></dd>{%endif%}
+  </dl>
+{%endif%}
+{%- endmacro%}
+
+{%macro show_author() -%}
+  {% if username and username in authors%}<div style="margin-top:0.5em;"><a href="{{authors[username].url}}">{%if "icon" in authors[username]%}<img style="margin-right:0.5em;max-width:64px;" class="img-thumbnail" src="{{authors[username].icon}}"/>{%endif%}{{ authors[username].name }}</a> {%if "twitter" in authors[username]%}<a href="https://twitter.com/{{authors[username].twitter}}"><img src="{{ url_for('static', filename='img/social/Twitter.png') }}"/></a>{%endif%}{%if "facebook" in authors[username]%}<a href="https://www.facebook.com/{{authors[username].facebook}}"><img src="{{ url_for('static', filename='img/social/Facebook.png') }}"/></a>{%endif%}{%if "googleplus" in authors[username]%}<a rel="author" href="https://plus.google.com/{{authors[username].googleplus}}"><img src="{{ url_for('static', filename='img/social/Google+.png') }}"/></a>{%endif%}</div>{%endif%}
+{%- endmacro%}
+
+{%block ogp_publisher%}
+<meta property="article:{%if username and username in authors and "facebook" in authors[username]%}author{%else%}publisher{%endif%}" content="https://www.facebook.com/{%if username and username in authors and "facebook" in authors[username]%}{{authors[username].facebook}}{%else%}wbrxcorp{%endif%}" />
+{%endblock%}
+
+{%block script%}
+<link href="{{ url_for('static', filename='css/prettify.css') }}" type="text/css" rel="stylesheet"/>
+<script type="text/javascript" src="{{ url_for('static', filename='js/run_prettify.js') }}"></script>
+<link rel="stylesheet" href="http://yandex.st/highlightjs/8.0/styles/github.min.css">
+<script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<style type="text/css">
+  pre.prettyprint {
+    padding:1em;
+  }
+</style>
+<script>hljs.initHighlightingOnLoad();</script>
+{%endblock%}
+
+{%block sidebar%}
+{%if banner%}
+<div class="text-center hidden-phone">
+  <a href="{{ banner_definitions[banner].href}}">
+    <img src="{{ banner_definitions[banner].vertical }}" alt="">
+  </a>
+</div>
+{%endif%}
+{%endblock%}
+
+{%block contents%}
+<div id="blog_post">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-9">
+        {% if page_image %}<div class="pull-right hidden-xs" style="max-width:200px;height:200px;vertical-align:middle;"><img class="img-rounded img-responsive" src="{{page_image}}"/></div>{% endif %}
+
+        <div class="post_content">
+          <h2>{{orig_title}}</h2>
+	  {%for label in labels%}
+	    {%if label in label_definitions%}
+	      {%if label_definitions[label].index%}
+                <a href="{{label}}.html"><span class="label label-primary">{{label_definitions[label].name}}</span></a>
+	      {%else%}
+                <span class="label label-default">{{label_definitions[label].name}}</span>
+              {%endif%}
+	    {%endif%}
+	  {%endfor%}
+	  {{show_author()}}
+          {% if pubDate %}<span class="date">{% set splitted_pubdate = pubDate.split("-")%}{{splitted_pubdate[0]|int}}年{{splitted_pubdate[1]|int}}月{{splitted_pubdate[2]|int}}日</span>{%endif%}
+	  <div class="socialbuttons">
+	    <div class="twitter pull-left"></div>
+	    <div class="facebook pull-left"></div>
+	    <div class="google pull-left"></div>
+	    <div class="hatena pull-left"></div>
+	    <div class="pull-left"><a href="https://twitter.com/wbrxcorp" class="twitter-follow-button" data-show-count="false" data-lang="ja" data-show-screen-name="false" data-dnt="true">@wbrxcorpさんをフォロー</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></div>
+	  </div>
+	  <div class="clearfix"></div>
+
+	  {{ prevnext() }}
+
+	  {% if description %}<p class="lead">{{description}}</p>{% endif %}
+
+	  {% if adsense %}
+<p><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- レスポンシブ -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-5263082618756428"
+     data-ad-slot="9159611996"
+     data-ad-format="auto"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script></p>
+	  {% endif %}
+
+	  {{ content|safe }}
+
+	  {% if adsense %}
+<p><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- レスポンシブ -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-5263082618756428"
+     data-ad-slot="9159611996"
+     data-ad-format="auto"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script></p>
+	  {% endif %}
+
+	  <div class="socialbuttons">
+	    <div class="twitter pull-left"></div>
+	    <div class="facebook pull-left"></div>
+	    <div class="google pull-left"></div>
+	    <div class="hatena pull-left"></div>
+	    <div class="pull-left"><a href="https://twitter.com/wbrxcorp" class="twitter-follow-button" data-show-count="false" data-lang="ja" data-show-screen-name="false" data-dnt="true">@wbrxcorpさんをフォロー</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></div>
+	  </div>
+	  <div class="clearfix"></div>
+
+	  {{show_author()}}
+
+	  {{ prevnext() }}
+
+	  {%if related%}
+	  <div style="margin-top:2em;">
+	    <h4>関連記事</h4>
+	    {%for related_page in related%}
+	      <a href="./{{related_page.page_name}}.html">{{related_page.title}}</a> {{ related_page.pubDate }} {%if "labels" in related_page%}{%for label in related_page.labels%}{%if label in label_definitions and "name" in label_definitions[label]%}<span class="label label-default">{{label_definitions[label].name}}</span> {%endif%}{%endfor%}{%endif%}<br/>
+	    {%endfor%}
+	  </div>
+	  {%endif%}
+
+	  {%if labeled_entries%}
+	  <div style="margin-top:2em;">
+	    <h4>同じカテゴリの記事</h4>
+	    {%for label in labels%}
+	      {%if label in label_definitions and label_definitions[label].index%}
+                  カテゴリ <a href="{{label}}.html">{{label_definitions[label].name}} の記事一覧</a><br/>
+	      {%endif%}
+	    {%endfor%}
+	    {% for entry in labeled_entries[:5] %}
+	    {%if entry.name != name%}
+	    <a href="{{entry.name}}.html">{{ entry.title }}</a> {{ entry.published_at|date }} <br/>
+	    {%endif%}
+	    {% endfor %}
+	    <h4>お勧めカテゴリ</h4>
+	    {%for label in label_definitions%}
+	      {%if label_definitions[label].index and "description" in label_definitions[label]%}
+	      <div class="row">
+		<div class="col-sm-2 col-xs-3">
+		  <a href="./{{label}}.html"><img src="{{label_definitions[label].page_image}}" class="img-responsive img-rounded" style="margin:0.2em;"></a>
+		</div>
+		<div class="col-sm-10 col-xs-9">
+		  <a href="./{{label}}.html">{{label_definitions[label].name}}</a><br/>{{label_definitions[label].description}}
+		</div>
+	      </div>
+	      {%endif%}
+	    {%endfor%}
+	  </div>
+	  {%endif%}
+        </div>
+      </div>
+
+      <!-- SideBar -->
+      <div class="col-sm-3">
+        <div class="sidebar">
+          <div class="box{%if not labeled_entries%} last{%endif%}">
+            <div class="sidebar_header">
+              <h4>Recent Posts</h4>
+            </div>
+	    {% for entry in entries[:10] %}
+	    {%if entry.name != name%}
+            <div class="recent">
+	      <p><a href="{{entry.name}}.html">{{ entry.title }}</a><br>{{entry.published_at | date}} {%if "labels" in entry and entry.labels|length > 0 and entry.labels[0] in label_definitions and "name" in label_definitions[entry.labels[0]]%}<br><small>{{label_definitions[entry.labels[0]].name}}</small>{%endif%}</p>
+            </div>
+	    {%endif%}
+	    {% endfor %}
+          </div>
+
+	  {%if labeled_entries%}
+          <div class="box last">
+            <div class="sidebar_header">
+              <h4>Category Recents</h4>
+            </div>
+	    {% for entry in labeled_entries[:10] %}
+	    {%if entry.name != name%}
+            <div class="recent">
+	      <p><a href="{{entry.page_name}}.html">{{ entry.title }}</a><br>{{entry.published_at | date}} {%if "labels" in entry and entry.labels|length > 0 and entry.labels[0] in label_definitions and "name" in label_definitions[entry.labels[0]]%}<br/><small>{{label_definitions[entry.labels[0]].name}}</small>{%endif%}</p>
+            </div>
+	    {%endif%}
+	    {% endfor %}
+          </div>
+	  {%endif%}
+	  {% if adsense %}
+<p><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- レスポンシブ -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-5263082618756428"
+     data-ad-slot="9159611996"
+     data-ad-format="auto"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script></p>
+	  {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%endblock%} 

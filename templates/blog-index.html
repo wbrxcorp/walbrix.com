@@ -1,0 +1,67 @@
+{% extends "page.html" %}
+
+{%block title%}ワルブリックス株式会社 ブログ{%endblock%}
+
+{%block contents%}
+<div id="blog">
+  <div class="container">
+    <div class="section_header">
+      <h3>Blog</h3>
+      <input type="text" class="search-query form-control" placeholder="Search">
+    </div>
+
+    <!-- Post Row -->
+    <div class="row post_row">
+      {% for label in labels%}
+      <!-- Post -->
+      <div class="col-sm-4">
+        <div class="post">
+          <div class="img" style="text-align: center;">
+            <a href="{{label}}.html">
+              <img src="{{label_definitions[label].page_image}}" alt="" class="img-responsive" style="width: 100%;"/>
+            </a>
+          </div>
+          <div class="text">
+            <h5><a href="{{label}}.html">{{ label_definitions[label].name }}</a></h5>
+          </div>
+          <div class="author_box">
+            <p>{{ label_definitions[label].description }}</p>
+          </div>
+          <a class="plus_wrapper" href="{{label}}.html">
+            <span>&#43;</span>
+          </a>
+        </div>
+      </div>
+    {% endfor%}
+    </div>
+
+    <p>{{ contents | safe }}</p>
+
+    <h3>全ての記事</h3>
+    <dl class="dl-horizontal">
+    {% for entry in entries %}
+    <dt>{{ entry.published_at |date}}</dt>
+    <dd><a href="{{entry.name}}.html">{{ entry.title }}</a> {%if "labels" in entry%}{%for label in entry.labels%}{%if label in label_definitions and "name" in label_definitions[label]%}<span class="label label-default">{{label_definitions[label].name}}</span> {%endif%}{%endfor%}{%endif%}</dd>
+    {% endfor %}
+    </dl>
+  </div>
+</div>
+{%endblock%}
+
+{%block script%}
+<script type="text/javascript" >
+$(document).ready(function () {
+    $('input.search-query').keypress(function(e) {
+        var value = $(this).val();
+        if (e.keyCode == 13 && value != "") {
+            $('<form/>', {id: 'cse-search-box',action: 'http://google.com/cse'})
+            .append($('<input/>', {type: 'hidden', name: 'ie', value: 'UTF-8'}))
+            .append($('<input/>', {type: 'hidden', name: 'q', value: value}))
+            .append($('<input/>', {type: 'hidden', name: 'cx', value: '017229871416493699095:iscmomcmvhq'}))
+            .appendTo(document.body)
+            .submit();
+        }
+    });
+});
+</script>
+{%endblock%}

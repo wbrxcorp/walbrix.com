@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ja" ng-app="Otoiawase">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/github.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/github-markdown.css') }}" />
+    <script src="http://yandex.st/highlightjs/8.2/highlight.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.0/ui-bootstrap-tpls.min.js"></script>
+    <script src="http://pc035860.github.io/angular-highlightjs/angular-highlightjs.min.js"></script>
+    <script>
+      angular.module("Otoiawase", ["hljs","ui.bootstrap"])
+      .config(function (hljsServiceProvider) {
+        hljsServiceProvider.setOptions({tabReplace: '    '});
+      })
+    </script>
+    <title>{% if title %}{{title}} - {% endif %}レスポンシブでインタラクティブなフリーのお問い合わせフォーム - ワルブリックス株式会社</title>
+    {% include "analytics.html" %}
+  </head>
+  <body>
+    <div class="container">
+      {%block contents%}{{ content | safe }}{%endblock%}
+    </div>
+  </body>
+</html>

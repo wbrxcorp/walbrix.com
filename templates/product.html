@@ -1,0 +1,42 @@
+{% extends "page.html" %}
+
+{%block contents%}
+    <div id="features" class="features_page">
+        <div class="container">
+            <!-- Feature Wrapper -->
+            <div class="feature_wrapper option1">
+	      <img src="{{page_image}}" style="margin-left:1em;" class="img-rounded img-responsive pull-right hidden-xs"/>
+              <div class="section_header">
+                <h3>{{title}}</h3>
+              </div>
+		
+              <div class="subtitle">
+                <p class="lead">{{description}}</p>
+              </div>
+
+	      <div class="socialbuttons">
+		<div class="twitter pull-left"></div>
+		<div class="facebook pull-left"></div>
+		<div class="google pull-left"></div>
+		<div class="hatena pull-left"></div>
+	      </div>
+	      <div class="clearfix"></div>
+
+            </div>
+	    {{ content|safe }}
+
+	    <p><a class="btn btn-primary" href="../contact.html"><img src="../static/img/f_logo.png"/> オンラインでのお問い合わせはこちらからどうぞ &raquo;</a></p>
+
+	    <div class="socialbuttons">
+	      <div class="twitter pull-left"></div>
+	      <div class="facebook pull-left"></div>
+	      <div class="google pull-left"></div>
+	      <div class="hatena pull-left"></div>
+	    </div>
+	    <div class="clearfix"></div>
+
+        </div>
+    </div>
+
+
+{%endblock%}
