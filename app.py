@@ -5,6 +5,8 @@ import os,json,urllib2,datetime
 import flask,werkzeug,markdown,feedgenerator,pytz
 
 app = flask.Flask(__name__)
+app.config.from_pyfile('default_config.py')
+app.config.from_pyfile('local_config.py', silent=True)
 
 timezone = pytz.timezone("Asia/Tokyo")
 
@@ -100,6 +102,4 @@ def _date(t):
     return u"%d年%d月%d日" % (now.year, now.month, now.day)
 
 if __name__ == '__main__':
-    app.config.from_pyfile('default_config.py')
-    app.config.from_pyfile('local_config.py', silent=True)
     app.run(host='0.0.0.0',debug=True)
