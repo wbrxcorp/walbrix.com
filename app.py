@@ -76,6 +76,12 @@ def page_with_path(path,page_name):
         # TODO: 複数ラベル
         entry["labeled_entries"] = get_json_from_cms("%s/?label=%s&limit=%s" % (path, entry["labels"][0],page_length))["entries"]
 
+    if "previous" in entry:
+        entry["previous"] = get_json_from_cms("%s/%s.json" % (path,entry["previous"]), False)
+
+    if "next" in entry:
+        entry["next"] = get_json_from_cms("%s/%s.json" % (path,entry["next"]), False)
+
     return flask.render_template(entry["template"],**entry)
 
 @app.route('/')

@@ -23,8 +23,8 @@
 {%macro prevnext() -%}
 {% if previous or next%}
   <dl class="dl-horizontal" style="margin-top:1em;margin-bottom:1em;">
-  {% if previous %}<dt>≪ 前の記事</dt><dd><a href="./{{previous.page_name}}.html">{{previous.title}}</a></dd>{%endif%}
-  {% if next %}<dt>次の記事 ≫</dt><dd><a href="./{{next.page_name}}.html">{{next.title}}</a></dd>{%endif%}
+  {% if previous %}<dt>≪ 前の記事</dt><dd><a href="./{{previous.name}}.html">{{previous.title}}</a></dd>{%endif%}
+  {% if next %}<dt>次の記事 ≫</dt><dd><a href="./{{next.name}}.html">{{next.title}}</a></dd>{%endif%}
   </dl>
 {%endif%}
 {%- endmacro%}
