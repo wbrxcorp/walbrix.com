@@ -79,7 +79,7 @@
 	    {%endif%}
 	  {%endfor%}
 	  {{show_author()}}
-          {% if pubDate %}<span class="date">{% set splitted_pubdate = pubDate.split("-")%}{{splitted_pubdate[0]|int}}年{{splitted_pubdate[1]|int}}月{{splitted_pubdate[2]|int}}日</span>{%endif%}
+          {% if published_at %}<span class="date">{{published_at|date}}</span>{%endif%}
 	  <div class="socialbuttons">
 	    <div class="twitter pull-left"></div>
 	    <div class="facebook pull-left"></div>
