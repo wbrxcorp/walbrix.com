@@ -140,7 +140,7 @@
 	  <div style="margin-top:2em;">
 	    <h4>関連記事</h4>
 	    {%for related_page in related%}
-	      <a href="./{{related_page.page_name}}.html">{{related_page.title}}</a> {{ related_page.pubDate }} {%if "labels" in related_page%}{%for label in related_page.labels%}{%if label in label_definitions and "name" in label_definitions[label]%}<span class="label label-default">{{label_definitions[label].name}}</span> {%endif%}{%endfor%}{%endif%}<br/>
+	      <a href="./{{related_page.name}}.html">{{related_page.title}}</a> {{ related_page.pubDate }} {%if "labels" in related_page%}{%for label in related_page.labels%}{%if label in label_definitions and "name" in label_definitions[label]%}<span class="label label-default">{{label_definitions[label].name}}</span> {%endif%}{%endfor%}{%endif%}<br/>
 	    {%endfor%}
 	  </div>
 	  {%endif%}
@@ -200,7 +200,7 @@
 	    {% for entry in labeled_entries[:10] %}
 	    {%if entry.name != name%}
             <div class="recent">
-	      <p><a href="{{entry.page_name}}.html">{{ entry.title }}</a><br>{{entry.published_at | date}} {%if "labels" in entry and entry.labels|length > 0 and entry.labels[0] in label_definitions and "name" in label_definitions[entry.labels[0]]%}<br/><small>{{label_definitions[entry.labels[0]].name}}</small>{%endif%}</p>
+	      <p><a href="{{entry.name}}.html">{{ entry.title }}</a><br>{{entry.published_at | date}} {%if "labels" in entry and entry.labels|length > 0 and entry.labels[0] in label_definitions and "name" in label_definitions[entry.labels[0]]%}<br/><small>{{label_definitions[entry.labels[0]].name}}</small>{%endif%}</p>
             </div>
 	    {%endif%}
 	    {% endfor %}
