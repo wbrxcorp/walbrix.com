@@ -28,6 +28,7 @@
     
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.0/ui-bootstrap-tpls.min.js"></script>
     <script>
+      {%if request.cookies.get("no_report") %}window['ga-disable-UA-50657-11'] = true;{%endif%}
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -37,9 +38,11 @@
     </script>
     <script>
       angular.module('MyApp', ['angulartics', 'angulartics.google.analytics','angulartics.scroll'])
+      .config(["$analyticsProvider", function($analyticsProvider) {
+        //$analyticsProvider.vistualPageViews(false);
+      }])
       .run([ "$rootScope", "$location", "$analytics", function($scope, $location, $analytics) {
         //$analytics.pageTrack($location.path());
-        $scope.eventTrack = $analytics.eventTrack;
       }]);
     </script>
   </head>
