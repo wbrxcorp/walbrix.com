@@ -38,7 +38,6 @@
     <script>
       angular.module('MyApp', ['angulartics', 'angulartics.google.analytics','angulartics.scroll'])
       .run([ "$rootScope", "$location", "$analytics", function($scope, $location, $analytics) {
-        //$analytics.pageTrack($location.path());
         $scope.eventTrack = $analytics.eventTrack;
       }]);
     </script>
@@ -52,11 +51,12 @@
       </div>
     </nav>
     <div class="container">
-      <img style="margin: 0 auto" src="http://www.walbrix.com/cms/public/wbrxcorp/product/stdserver.jpg" class="img img-responsive" alt="製品イメージ">
-      {%if description%}<p class="lead">{{description}}</p>{%endif%}
+      <img style="margin: 0 auto" src="http://assets.walbrix.com/product/stdserver/header_{%if name == 'index'%}large{%else%}small{%endif%}.jpg" class="img img-responsive" alt="製品イメージ">
+      {%if description%}<p class="lead">{{description}}</p>{%else%}<br>{%endif%}
       <div class="row">
 	<div class="col-sm-9 col-md-9 col-sm-push-3 col-md-push-3">
 	  {{ content | safe }}
+	  <p><img style="margin: 0 auto" src="http://assets.walbrix.com/product/stdserver/inquiry.png" alt="導入前のお問い合わせ電話番号 050-3159-5792" class="img-responsive"></p>
 	</div>
 	<div class="col-sm-3 col-md-3 col-sm-pull-9 col-md-pull-9" style="padding:0;">
 	  <div class="panel panel-default">
