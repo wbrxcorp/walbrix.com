@@ -1,5 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
+# emerge markdown (< 2.5)
+# https://github.com/dart-lang/py-gfm
 
 import os,json,re,urllib2,datetime
 import flask,werkzeug,markdown,feedgenerator,pytz
