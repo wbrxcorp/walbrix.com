@@ -4,8 +4,9 @@
 	    {"name":"AMD Sempron (2コア)","price":0},
 	    {"name":"Intel Celeron (2コア)","price":10000},
 	    {"name":"Intel Pentium (2コア)","price":15000},
-	    {"name":"Intel Core i3 (2コア/論理4コア)","price":20000},
-	    {"name":"Intel Core i5 (4コア)","price":30000}
+	    {"name":"Intel Core i3 (論理4コア)","price":20000},
+	    {"name":"Intel Core i5 (物理4コア)","price":30000},
+	    {"name":"Intel Core i7 (論理8コア)","price":45000}
 	],
 	"RAM":[
 	    {"name":"4GB","price":0},
@@ -13,7 +14,7 @@
 	    {"name":"16GB","price":25000}
 	],
 	"HDD":[
-	    {"name":"500GBx3重化", "price":0},
+	    {"name":"500GB(0.5TB)x3重化", "price":0},
 	    {"name":"1TBx3重化", "price":10000},
 	    {"name":"2TBx3重化", "price":20000},
 	    {"name":"3TBx3重化", "price":35000},
