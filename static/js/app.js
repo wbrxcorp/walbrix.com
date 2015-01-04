@@ -1,4 +1,4 @@
-angular.module('MyApp', ['ngResource', 'angulartics', 'angulartics.google.analytics','angulartics.scroll'])
+angular.module('MyApp', ['ngResource', 'angulartics', 'angulartics.google.analytics','angulartics.scroll','angular-loading-bar'])
 .config(["$analyticsProvider", function($analyticsProvider) {
     //$analyticsProvider.vistualPageViews(false);
 }])
