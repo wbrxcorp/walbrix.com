@@ -1,0 +1,24 @@
+{
+    "base_price":49800,
+	"CPU":[
+	    {"name":"AMD Sempron","price":0},
+	    {"name":"Intel Celeron","price":10000},
+	    {"name":"Intel Pentium","price":15000},
+	    {"name":"Intel Core i3","price":20000},
+	    {"name":"Intel Core i5","price":30000}
+	],
+	"RAM":[
+	    {"name":"4GB","price":0},
+	    {"name":"8GB","price":10000},
+	    {"name":"16GB","price":25000}
+	],
+	"HDD":[
+	    {"name":"500GBx3重化", "price":0},
+	    {"name":"1TBx3重化", "price":10000},
+	    {"name":"2TBx3重化", "price":20000},
+	    {"name":"3TBx3重化", "price":35000},
+	    {"name":"4TBx3重化", "price":50000},
+	    {"name":"5TBx3重化", "price":70000},
+	    {"name":"6TBx3重化", "price":92000}
+	]
+    }
