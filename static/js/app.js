@@ -1,4 +1,4 @@
-angular.module('MyApp', ['ngResource', 'angulartics', 'angulartics.google.analytics','angulartics.scroll','angular-loading-bar'])
+angular.module('MyApp', ['ngResource', 'angulartics', 'angulartics.google.analytics','angulartics.scroll','angular-loading-bar','ui.bootstrap'])
 .config(["$analyticsProvider", function($analyticsProvider) {
     //$analyticsProvider.vistualPageViews(false);
 }])
@@ -31,6 +31,7 @@ angular.module('MyApp', ['ngResource', 'angulartics', 'angulartics.google.analyt
     }
 
     $scope.total = function() {
+	if (!$scope.price_data) return undefined;
 	return $scope.price_data.base_price + $scope.cpu.price + $scope.ram.price + $scope.hdd.price;
     }
 
@@ -43,6 +44,11 @@ angular.module('MyApp', ['ngResource', 'angulartics', 'angulartics.google.analyt
     load("default");
 
 }])
-.run([ "$rootScope", "$location", "$analytics", function($scope, $location, $analytics) {
-    //$analytics.pageTrack($location.path());
+.run([ "$rootScope", "$location", "$analytics", "$modal", function($scope, $location, $analytics, $modal) {
+    $scope.modal = function(page_name) {
+	$modal.open({
+	    templateUrl: "./modal/" + page_name + '.html',
+	    backdrop:false
+	});
+    }
 }]);
