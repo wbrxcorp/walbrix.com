@@ -1,17 +1,16 @@
 {
     "base_price":49800,
 	"CPU":[
-	    {"name":"AMD Sempron (2コア)","price":0},
-	    {"name":"Intel Celeron (2コア)","price":10000},
-	    {"name":"Intel Pentium (2コア)","price":15000},
+	    {"name":"AMD 低消費電力2コア","price":0},
+	    {"name":"Intel 2コア","price":10000},
 	    {"name":"Intel Core i3 (論理4コア)","price":20000},
 	    {"name":"Intel Core i5 (物理4コア)","price":30000},
 	    {"name":"Intel Core i7 (論理8コア)","price":45000}
 	],
 	"RAM":[
 	    {"name":"4GB","price":0},
-	    {"name":"8GB","price":10000},
-	    {"name":"16GB","price":25000}
+	    {"name":"8GB","price":15000},
+	    {"name":"16GB","price":30000}
 	],
 	"HDD":[
 	    {"name":"500GB(0.5TB)x3重化", "price":0},
