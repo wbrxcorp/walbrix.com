@@ -3,7 +3,7 @@ angular.module('MyApp', ['ngResource', 'angulartics', 'angulartics.google.analyt
     //$analyticsProvider.vistualPageViews(false);
 }])
 .controller("Quote", ["$scope", "$resource", "$filter", function($scope, $resource, $filter) {
-    var price_data = $resource("./:name.json");
+    var price_data = $resource($scope.root_path + "/product/stdserver/:name.json");
     var number_filter = $filter('number');
     
     function load(name) {
@@ -39,16 +39,22 @@ angular.module('MyApp', ['ngResource', 'angulartics', 'angulartics.google.analyt
 	return 10000;
     }
 
-    $scope.tax_rate = 1.08;
-
     load("default");
 
 }])
+.controller("Inquiry", ["$scope", "$resource", function($scope, $resource) {
+    var inquiry = $resource($scope.root_path + "/inquiry");
+    $scope.inquiry = {};
+	$scope.submit = function() {
+		inquiry.save($scope.inquiry);
+	}
+}])
 .run([ "$rootScope", "$location", "$analytics", "$modal", function($scope, $location, $analytics, $modal) {
-    $scope.modal = function(page_name) {
-	$modal.open({
-	    templateUrl: "./modal/" + page_name + '.html',
-	    backdrop:false
-	});
+	$scope.tax_rate = 1.08;
+    $scope.root_path = (window["ROOT_PATH"] || "/").replace(/\/*$/, "");
+    $scope.modal = function(template) {
+		$modal.open({
+		    templateUrl: template
+		});
     }
 }]);

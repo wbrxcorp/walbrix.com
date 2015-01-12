@@ -3,7 +3,7 @@
 # emerge markdown (< 2.5)
 # https://github.com/dart-lang/py-gfm
 
-import os,json,re,urllib2,datetime
+import os,json,re,urllib2,datetime,uuid,smtplib,email,pprint
 import flask,werkzeug,markdown,feedgenerator,pytz
 
 app = flask.Flask(__name__)
@@ -87,12 +87,60 @@ def no_report():
     response.set_cookie("no_report", "1", expires="Tue, 1-Jan-2030 00:00:00 GMT", max_age=86400*365*20)
     return response
 
+@app.before_request
+def before_request():
+    if flask.request.method == "GET":
+        if "xsrf_token" not in flask.session: flask.session["xsrf_token"] = str(uuid.uuid4())
+    elif flask.request.method == "POST":
+        session_token = flask.session.get("xsrf_token")
+        header_token = flask.request.headers.get("X-XSRF-TOKEN")
+        if not session_token or not header_token or session_token != header_token: flask.abort(403)
+
+@app.after_request
+def after_request(response):
+    if flask.request.method == "GET" and response is not None:
+        xsrf_token = flask.session["xsrf_token"]
+        if xsrf_token != flask.request.cookies.get("XSRF-TOKEN"):
+            response.set_cookie("XSRF-TOKEN", xsrf_token)
+    return response
+
+@app.route('/inquiry', methods=['POST'])
+def inquiry_post():
+    mail_from = app.config["INQUIRY_MAIL_FROM"]
+    mail_to = app.config["INQUIRY_MAIL_TO"]
+    mail_charset = app.config["INQUIRY_MAIL_CHARSET"]
+    body = json.dumps(flask.request.json, indent=4,ensure_ascii=False)
+    subject = app.config["INQUIRY_MAIL_SUBJECT"]
+    msg = email.MIMEText.MIMEText(body.encode(mail_charset), "plain", mail_charset)
+    msg["Subject"] = email.Header.Header(subject, mail_charset)
+    msg["From"] = mail_from
+    msg["To"] = mail_to
+    msg["Date"] = email.Utils.formatdate(localtime=True)
+
+    smtp_host = app.config["SMTP_HOST"]
+    smtp_port = app.config["SMTP_PORT"]
+    smtp_user = app.config["SMTP_USER"]
+    smtp_password = app.config["SMTP_PASSWORD"]
+
+    smtp = smtplib.SMTP(smtp_host, smtp_port)
+    try:
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.login(smtp_user, smtp_password)
+        smtp.sendmail(mail_from, [mail_to], msg.as_string())
+    except Exception, e:
+        flask.current_app.logger.exception("inquiry")
+        return flask.jsonify({"success":False, "info":e.message})
+    finally:
+        smtp.close()
+    return flask.jsonify({"success":True})
+
 def get_json_from_cms(url, throw_404=True):
     try:
         return json.load(urllib2.urlopen(app.config["CMS_BASE"] + "/" + url))
     except urllib2.HTTPError, e:
         if e.code == 404:
-            if throw_404: raise werkzeug.exceptions.NotFound()
+            if throw_404: flask.abort(404)
             else: return None
         #else
         raise
@@ -133,6 +181,9 @@ def page_with_path(path,page_name):
 
     if path.startswith("templates"): return "Not found", 404
     entry = get_json_from_cms("%s/%s.json" % (path,page_name))
+
+    if "redirect_to" in entry:
+        return flask.redirect(entry["redirect_to"])
 
     page_length = entry["page_length"] if "page_length" in entry else 20
     # 同一プレフィクスのエントリ一覧も
