@@ -16,10 +16,10 @@
     {% if description %}<meta property="og:description" content="{{ description }}"/>{% endif %}
     {% if page_image %}<meta property="og:image" content="{{ page_image }}"/>{% endif %}
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.28/angular.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.28/angular-resource.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular-resource.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-lightbox.min.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/loading-bar.min.css') }}">
 
@@ -28,7 +28,7 @@
     <script src="{{ url_for('static', filename='js/angulartics-scroll.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/loading-bar.min.js') }}"></script>
     
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.0/ui-bootstrap-tpls.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.1/ui-bootstrap-tpls.min.js"></script>
     <script>
       if (/(^|;)\s*no_report=/.test(document.cookie)) {
         window['ga-disable-UA-50657-11'] = true;
@@ -54,7 +54,11 @@
       </div>
     </nav>
     <div class="container">
-      <img style="margin: 0 auto" src="http://assets.walbrix.com/product/stdserver/header_{%if name == 'index'%}large{%else%}small{%endif%}.jpg" class="img img-responsive" alt="製品イメージ">
+      {%if name == 'index'%}
+      <img style="margin: 0 auto" src="http://assets.walbrix.com/product/stdserver/header_large.jpg" class="img img-responsive" alt="製品イメージ">
+      {%else%}
+      <a href="./"><img style="margin: 0 auto" src="http://assets.walbrix.com/product/stdserver/header_small.jpg" class="img img-responsive" alt="製品イメージ"></a>
+      {%endif%}
       {%if description%}<p class="lead">{{description}}</p>{%else%}<br>{%endif%}
       <div class="row">
 	<div class="col-sm-9 col-md-9 col-sm-push-3 col-md-push-3">
@@ -76,7 +80,7 @@
       </div>
       <hr>
       <footer>
-	Copyright(c) 2014-2015 Walbrix Corporation
+	Copyright(c) 2015 <a href="{{ url_for('.index') }}">Walbrix Corporation</a>
       </footer>
     </div>
   </body>
