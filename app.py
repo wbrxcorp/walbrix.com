@@ -46,14 +46,16 @@ def inject_env():
         "is_html5_compliant":is_html5_compliant_browser()
     }
 
+def parse_datetime(t):
+    return datetime.datetime.fromtimestamp(t / 1000) if isinstance(t, (int,long)) else datetime.datetime.strptime(t, "%Y-%m-%dT%H:%M:%SZ")
+
 @app.template_filter("datetime")
 def _datetime(t):
-    now = datetime.datetime.fromtimestamp(t / 1000)
-    return now.strftime(u"%Y-%m-%d %H:%M")
+    parse_datetime(t).strftime(u"%Y-%m-%d %H:%M")
 
 @app.template_filter("date")
 def _date(t):
-    now = datetime.datetime.fromtimestamp(t / 1000)
+    now = parse_datetime(t)
     return u"%d年%d月%d日" % (now.year, now.month, now.day)
 
 def check_referer(referer):
@@ -172,7 +174,7 @@ def rss(path):
     response = flask.make_response(feed.writeString('utf-8'))
     response.headers["Content-Type"] = "application/xml"
     return response
-    
+
 
 @app.route('/<path:path>/<page_name>.html')
 def page_with_path(path,page_name):
