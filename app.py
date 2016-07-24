@@ -167,7 +167,7 @@ def generate_prefix_from_path(path):
 
 def get_prefix_data(cur, prefix):
     # プレフィクスデータの読み込み
-    data = {}
+    data = {"prefix":prefix}
     prefix_components = prefix.split('/')
     for i in range(0, len(prefix_components) + 1):
         cur.execute("select data from prefixes where prefix=%s", ('/'.join(prefix_components[:i]),))
