@@ -188,9 +188,6 @@ def get_directory(path, labels, page_length = 20):
         else:
             label_condition = "and label is null"
 
-    print tuple([prefix] + (labels if (labels is not None and len(labels) > 0) else []) + [page_length, 0])
-    print label_condition
-
     cur.execute("select name,title,description,page_image,format,published_at,label from entries left outer join entries_labels on entries.id=entries_labels.entry_id where prefix=%s and visible and published_at is not null and published_at<=now() " + label_condition + " order by published_at desc limit %s offset %s", tuple([prefix] + (labels if (labels is not None and len(labels) > 0) else []) + [page_length, 0]))
 
     row = cur.fetchone()
