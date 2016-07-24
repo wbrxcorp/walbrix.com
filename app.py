@@ -5,6 +5,7 @@
 
 import os,json,re,urllib2,datetime,uuid,smtplib,email,pprint
 import flask,werkzeug,markdown,feedgenerator,pytz
+import MySQLdb
 
 app = flask.Flask(__name__)
 app.config.from_pyfile('default_config.py')
@@ -47,6 +48,7 @@ def inject_env():
     }
 
 def parse_datetime(t):
+    if isinstance(t, datetime.datetime): return t
     return datetime.datetime.fromtimestamp(t / 1000) if isinstance(t, (int,long)) else datetime.datetime.strptime(t, "%Y-%m-%dT%H:%M:%SZ")
 
 @app.template_filter("datetime")
@@ -97,6 +99,11 @@ def before_request():
         session_token = flask.session.get("xsrf_token")
         header_token = flask.request.headers.get("X-XSRF-TOKEN")
         if not session_token or not header_token or session_token != header_token: flask.abort(403)
+    flask.g.db = MySQLdb.connect(
+        host=app.config["MYSQL_HOST"],db=app.config["MYSQL_DATABASE"],
+        user=app.config["MYSQL_USER"],passwd=app.config["MYSQL_PASSWORD"],
+        charset='utf8', use_unicode=True
+    )
 
 @app.after_request
 def after_request(response):
@@ -105,6 +112,10 @@ def after_request(response):
         if xsrf_token != flask.request.cookies.get("XSRF-TOKEN"):
             response.set_cookie("XSRF-TOKEN", xsrf_token)
     return response
+
+@app.teardown_request
+def teardown_request(exception=None):
+    flask.g.db.close()
 
 @app.route('/inquiry', methods=['POST'])
 def inquiry_post():
@@ -137,6 +148,7 @@ def inquiry_post():
         smtp.close()
     return flask.jsonify({"success":True})
 
+
 def get_json_from_cms(url, throw_404=True):
     try:
         return json.load(urllib2.urlopen(app.config["CMS_BASE"] + "/" + url))
@@ -150,6 +162,90 @@ def get_json_from_cms(url, throw_404=True):
     except urllib2.URLError, e:
         raise werkzeug.exceptions.ServiceUnavailable(e)
 
+def generate_prefix_from_path(path):
+    return re.sub(r"\/\/+", "/", app.config["ROOT_PREFIX"] + ('/' + path if path else ''))
+
+def get_prefix_data(cur, prefix):
+    # プレフィクスデータの読み込み
+    data = {}
+    prefix_components = prefix.split('/')
+    for i in range(0, len(prefix_components) + 1):
+        cur.execute("select data from prefixes where prefix=%s", ('/'.join(prefix_components[:i]),))
+        row = cur.fetchone()
+        if row: data.update(json.loads(row[0]))
+    return data
+
+def get_directory(path, labels, page_length = 20):
+    prefix = generate_prefix_from_path(path)
+    cur = flask.g.db.cursor()
+    data = get_prefix_data(cur, prefix)
+
+    entries = []
+    label_condition = ""
+    if isinstance(labels, list):
+        if len(labels) > 0:
+            label_condition = "and label in (%s)" % ','.join(["%s"] * len(labels))
+        else:
+            label_condition = "and label is null"
+
+    print tuple([prefix] + (labels if (labels is not None and len(labels) > 0) else []) + [page_length, 0])
+    print label_condition
+
+    cur.execute("select name,title,description,page_image,format,published_at,label from entries left outer join entries_labels on entries.id=entries_labels.entry_id where prefix=%s and visible and published_at is not null and published_at<=now() " + label_condition + " order by published_at desc limit %s offset %s", tuple([prefix] + (labels if (labels is not None and len(labels) > 0) else []) + [page_length, 0]))
+
+    row = cur.fetchone()
+    while row is not None:
+        name = row[0]
+        if len(entries) == 0 or entries[-1]["name"] != name:
+            entries.append({
+                "name":name,
+                "title":row[1],
+                "description":row[2],
+                "page_image":row[3],
+                "format":row[4],
+                "published_at":row[5],
+                "labels":[row[6]] if row[6] is not None else []
+            })
+            #print row[5]
+        elif row[6] is not None:
+            entries[-1]["labels"].append(row[6])
+        row = cur.fetchone()
+
+    data["entries"] = entries
+
+    return data
+
+def get_page(path, name, throw_404=True):
+    prefix = generate_prefix_from_path(path)
+    cur = flask.g.db.cursor()
+
+    data = get_prefix_data(cur, prefix)
+
+    cur.execute("select title,description,page_image,content,data,format,label from entries left outer join entries_labels on entries.id=entries_labels.entry_id where prefix=%s and name=%s and visible", (prefix, name))
+    row = cur.fetchone()
+    if row is None:
+        if throw_404: flask.abort(404)
+        else: return None
+
+    data.update({
+        "name":name,
+        "title":row[0],
+        "description":row[1],
+        "page_image":row[2],
+        "content":row[3],
+        "format":row[5],
+        "labels":[row[6]] if row[6] is not None else []
+    })
+    if row[4] is not None: data.update(json.loads(row[4]))
+
+    # ラベル拾う
+    row = cur.fetchone()
+    while row is not None:
+        data["labels"].append(row[6])
+        row = cur.fetchone()
+
+    return data
+
 @app.route('/<page_name>.html')
 def page(page_name):
     return page_with_path("",page_name)
@@ -158,7 +254,8 @@ def page(page_name):
 def rss(path):
     page_length = 100
 
-    data = get_json_from_cms("%s/?limit=%d" % (path,page_length))
+    #data = get_json_from_cms("%s/?limit=%d" % (path,page_length))
+    data = get_directory(path, None, page_length)
     entries = data["entries"]
 
     link = "%s%s/" % (flask.request.url_root,path)
@@ -175,36 +272,39 @@ def rss(path):
     response.headers["Content-Type"] = "application/xml"
     return response
 
-
 @app.route('/<path:path>/<page_name>.html')
 def page_with_path(path,page_name):
     if path.startswith("static"):
         return flask.send_from_directory(os.path.join(app.root_path, path), "%s.html" % page_name)
 
     if path.startswith("templates"): return "Not found", 404
-    entry = get_json_from_cms("%s/%s.json" % (path,page_name))
+    #entry = get_json_from_cms("%s/%s.json" % (path,page_name))
+    entry = get_page(path, page_name)
 
     if "redirect_to" in entry:
         return flask.redirect(entry["redirect_to"])
 
     page_length = entry["page_length"] if "page_length" in entry else 20
     # 同一プレフィクスのエントリ一覧も
-    entry["entries"] = get_json_from_cms("%s/?limit=%d" % (path,page_length))["entries"]
+    #entry["entries"] = get_json_from_cms("%s/?limit=%d" % (path,page_length))["entries"]
+    entry["entries"] = get_directory(path, None, page_length)["entries"]
 
     # 同一ラベルのエントリ一覧も
-    if len(entry["labels"]) > 0:
-        # TODO: 複数ラベル
-        entry["labeled_entries"] = get_json_from_cms("%s/?label=%s&limit=%s" % (path, entry["labels"][0],page_length))["entries"]
+    if "labels" in entry and len(entry["labels"]) > 0:
+        #entry["labeled_entries"] = get_json_from_cms("%s/?label=%s&limit=%s" % (path, entry["labels"][0],page_length))["entries"]
+        entry["labeled_entries"] = get_directory(path, entry["labels"],page_length)["entries"]
 
     if "previous" in entry:
-        entry["previous"] = get_json_from_cms("%s/%s.json" % (path,entry["previous"]), False)
+        #entry["previous"] = get_json_from_cms("%s/%s.json" % (path,entry["previous"]), False)
+        entry["previous"] = get_page(path, entry["previous"], False)
 
     if "next" in entry:
-        entry["next"] = get_json_from_cms("%s/%s.json" % (path,entry["next"]), False)
+        #entry["next"] = get_json_from_cms("%s/%s.json" % (path,entry["next"]), False)
+        entry["next"] = get_page(path, path,entry["next"], False)
 
     if entry.get("apply_jinja2"):
         entry["content"] = flask.render_template_string(entry["content"], **entry)
-    if entry["format"] == "markdown":
+    if entry.get("format") == "markdown":
         entry["content"] = markdown.markdown(entry["content"], extensions=['gfm'])
 
     return flask.render_template(entry["template"],**entry)

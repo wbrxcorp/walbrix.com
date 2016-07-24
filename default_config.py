@@ -1,4 +1,5 @@
 CMS_BASE="http://localhost:8080/cms/public/wbrxcorp"
+ROOT_PREFIX="wbrxcorp"
 INQUIRY_MAIL_FROM="noreply@example.com"
 INQUIRY_MAIL_TO="info@example.com"
 INQUIRY_MAIL_SUBJECT="Inquiry mail"
@@ -8,4 +9,8 @@ SMTP_PORT=465
 SMTP_USER="your_mailtrap_userid_here"
 SMTP_PASSWORD="your_mailtrap_password_here"
 SECRET_KEY="SOME_RANDOM_STRING"
+MYSQL_HOST="localhost"
+MYSQL_DATABASE="cms"
+MYSQL_USER="cms"
+MYSQL_PASSWORD=""
 # put local_config.py to override above
